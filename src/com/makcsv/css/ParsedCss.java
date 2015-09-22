@@ -135,6 +135,50 @@ public class ParsedCss {
         
     }
     
+    public String asMinifiedText() {
+        
+        String css = this.asText();
+        StringBuilder sb = new StringBuilder();
+        
+        for (int i = 0; i < css.length(); i++) {
+            
+            char c = css.charAt(i),
+                cp = (i > 1) ? css.charAt(i - 1) : '\0',
+                cn = (i < css.length() - 1) ? css.charAt(i + 1) : '\0';
+            
+            if ('\n' == c || 
+                '\t' == c || 
+                (Character.isWhitespace(c) && ':' == cp) || 
+                (Character.isWhitespace(c) && ',' == cp) ||
+                (Character.isWhitespace(c) && '{' == cn))
+            {
+                continue;
+            }
+            
+            sb.append(c);
+
+        }
+        
+        css = sb.toString();
+        sb.setLength(0);
+        
+        for (int i = 0; i < css.length(); i++) {
+            
+            char c = css.charAt(i),
+                cn = (i < css.length() - 1) ? css.charAt(i + 1) : '\0';
+            
+            if (';' == c && '}' == cn) {
+                continue;
+            }
+            
+            sb.append(c);
+
+        }
+        
+        return sb.toString();
+        
+    }
+    
     private static String _getLvlTabulation(int lvl) {
         
         StringBuilder sb = new StringBuilder();
