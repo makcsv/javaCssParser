@@ -2,10 +2,12 @@
 package com.makcsv.helpers;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,8 +65,11 @@ public class FileHelper {
 
         File file = new File(path);
         
-        OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-        out.write(content);
+        try (OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
+            out.write(content);
+        } catch (Exception ex) {
+            throw ex;
+        }
             
     }
     
@@ -80,10 +85,13 @@ public class FileHelper {
         
         File file = new File(path);
         
-        OutputStream out = new FileOutputStream(file);
-        byte[] buffer = new byte[content.available()];
-        content.read(buffer);
-        out.write(buffer);
+        try (OutputStream out = new FileOutputStream(file)) {
+            
+            byte[] buffer = new byte[content.available()];
+            content.read(buffer);
+            out.write(buffer);
+            
+        }
         
     }
     
