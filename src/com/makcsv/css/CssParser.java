@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -38,6 +40,8 @@ public class CssParser {
     }
     
     private static List<CssRule> _parse(String cssText) {
+        
+        cssText = _fixCssMarkupIfNeeded(cssText);
         
         List<CssRule> rules = _getRulesList(cssText, "", 0);
         
@@ -145,6 +149,54 @@ public class CssParser {
         }
         
         return rules;
+        
+    }
+    
+    private static String _fixCssMarkupIfNeeded(String cssText) {
+        
+        Pattern p = Pattern.compile("(\\{([^\\{\\}]*)\\;([^\\{\\}\\@\\;]*)\\{)");
+        Matcher m = p.matcher(cssText);
+        
+        while (m.find()) {
+            
+            String[] strToRepl = m.group().split(";");
+            
+            if (strToRepl.length < 1) { continue; }
+            
+            strToRepl[strToRepl.length - 1] = "}" + strToRepl[strToRepl.length - 1];
+            
+            StringBuilder sb = new StringBuilder();
+            for (String s : strToRepl) {
+                sb.append(s);
+                sb.append(";");
+            }
+            String replacement = sb.toString();
+            
+            cssText = cssText.replace(m.group(), replacement);
+            
+        }
+        
+        Stack<Character> stack = new Stack();
+        StringBuilder sb = new StringBuilder(cssText);
+        Character tmp;
+        
+        for (int i = 0; i < sb.length(); i++) {
+            
+            tmp = sb.charAt(i);
+            
+            if (tmp == '{') {
+                stack.push(tmp);
+            }
+            
+            if (tmp == '}' && !stack.empty() && stack.lastElement() == '{') {
+                stack.pop();
+            } else if (tmp == '}' && stack.empty()) {
+                sb.setCharAt(i, ' ');
+            }
+            
+        }
+        
+        return sb.toString();
         
     }
     
