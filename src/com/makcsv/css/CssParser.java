@@ -17,6 +17,15 @@ public class CssParser {
     
     private CssParser() {}
     
+    /**
+     * 
+     * Main method (instead of constructor). Parses css text and return object
+     * of ParsedCss class that contains structured nodes of css document.
+     * 
+     * @param cssText
+     * @return
+     * @throws Exception 
+     */
     public static ParsedCss parse(String cssText) throws Exception {
         
         if (cssText.isEmpty()) {
